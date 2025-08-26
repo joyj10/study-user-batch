@@ -39,7 +39,7 @@ class DormantBatchJobTest {
         saveCustomer(364);
 
         // when
-        dormantBatchJob.execute();
+        JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -48,6 +48,7 @@ class DormantBatchJobTest {
                 .count();
 
         assertThat(dormantCount).isEqualTo(3);
+        assertThat(result.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     }
 
 
@@ -68,7 +69,7 @@ class DormantBatchJobTest {
         saveCustomer(400);
 
         // when
-        dormantBatchJob.execute();
+        JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -77,6 +78,7 @@ class DormantBatchJobTest {
                 .count();
 
         Assertions.assertThat(dormantCount).isEqualTo(10);
+        assertThat(result.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     }
 
     @Test
@@ -85,7 +87,7 @@ class DormantBatchJobTest {
         // given
 
         // when
-        dormantBatchJob.execute();
+        JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -94,6 +96,20 @@ class DormantBatchJobTest {
                 .count();
 
         Assertions.assertThat(dormantCount).isZero();
+        assertThat(result.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+    }
+    
+    @Test
+    @DisplayName("배치가 실패하면 BatchStatus FAILED 반환 함")
+    void test4() {
+        // given
+        final DormantBatchJob batchJob = new DormantBatchJob(null);
+
+        // when
+        final JobExecution result = batchJob.execute();
+    
+        // then
+        assertThat(result.getStatus()).isEqualTo(BatchStatus.FAILED);
     }
 
     private void saveCustomer(long loginMinusDays) {
