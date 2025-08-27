@@ -16,12 +16,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @Transactional
-class DormantBatchJobTest {
+class JobTest {
     @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
-    private DormantBatchJob dormantBatchJob;
+    private Job job;
 
 
     @Test
@@ -39,7 +39,7 @@ class DormantBatchJobTest {
         saveCustomer(364);
 
         // when
-        JobExecution result = dormantBatchJob.execute();
+        JobExecution result = job.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -69,7 +69,7 @@ class DormantBatchJobTest {
         saveCustomer(400);
 
         // when
-        JobExecution result = dormantBatchJob.execute();
+        JobExecution result = job.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -87,7 +87,7 @@ class DormantBatchJobTest {
         // given
 
         // when
-        JobExecution result = dormantBatchJob.execute();
+        JobExecution result = job.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -103,7 +103,15 @@ class DormantBatchJobTest {
     @DisplayName("배치가 실패하면 BatchStatus FAILED 반환 함")
     void test4() {
         // given
-        final DormantBatchJob batchJob = new DormantBatchJob(null);
+        final Job batchJob = new Job(null, new JobExecutionListener() {
+            @Override
+            public void beforeJob(JobExecution jobExecution) {
+            }
+
+            @Override
+            public void afterJob(JobExecution jobExecution) {
+            }
+        });
 
         // when
         final JobExecution result = batchJob.execute();
