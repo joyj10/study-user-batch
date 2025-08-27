@@ -8,8 +8,15 @@ import org.springframework.context.annotation.Configuration;
 public class DormantBatchConfiguration {
 
     @Bean
-    public Job dormantBatchJob(DormantBatchTasklet dormantBatchTasklet,
+    public Job dormantBatchJob(DormantBatchItemReader itemReader,
+                               DormantBatchItemProcessor itemProcessor,
+                               DormantBatchItemWriter itemWriter,
                                DormantBatchJobExecutionListener dormantBatchJobExecutionListener) {
-        return new Job(dormantBatchTasklet, dormantBatchJobExecutionListener);
+        return Job.builder()
+                .itemReader(itemReader)
+                .itemProcessor(itemProcessor)
+                .itemWriter(itemWriter)
+                .jobExecutionListener(dormantBatchJobExecutionListener)
+                .build();
     }
 }
