@@ -1,4 +1,4 @@
-package com.study.userbatch.application;
+package com.study.userbatch.application.dormant;
 
 import com.study.userbatch.batch.ItemProcessor;
 import com.study.userbatch.customer.Customer;

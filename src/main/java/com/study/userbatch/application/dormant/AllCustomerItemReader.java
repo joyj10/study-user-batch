@@ -1,4 +1,4 @@
-package com.study.userbatch.application;
+package com.study.userbatch.application.dormant;
 
 import com.study.userbatch.batch.ItemReader;
 import com.study.userbatch.customer.Customer;
@@ -9,18 +9,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DormantBatchItemReader implements ItemReader<Customer> {
+public class AllCustomerItemReader implements ItemReader<Customer> {
 
-    private int pageNo = 0;
     private final CustomerRepository customerRepository;
+    private int pageNo = 0;
 
-    public DormantBatchItemReader(CustomerRepository customerRepository) {
+    public AllCustomerItemReader(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
     @Override
     public Customer read() {
-        // 1. 유저 조회 (배치 학습용으로 사이즈 1로 조회해서 체크하도록 작성, 이렇게 하면 X)
+
         final PageRequest pageRequest = PageRequest.of(pageNo, 1, Sort.by("id").ascending());
         final Page<Customer> page = customerRepository.findAll(pageRequest);
 
@@ -31,5 +31,7 @@ public class DormantBatchItemReader implements ItemReader<Customer> {
             pageNo++;
             return page.getContent().get(0);
         }
+
     }
+
 }

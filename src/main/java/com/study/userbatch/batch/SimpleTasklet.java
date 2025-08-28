@@ -1,8 +1,6 @@
 package com.study.userbatch.batch;
 
-import org.springframework.stereotype.Component;
-
-@Component
+//@Component
 public class SimpleTasklet<I, O> implements Tasklet {
     private final ItemReader<I> iItemReader;
     private final ItemProcessor<I, O> iItemProcessor;

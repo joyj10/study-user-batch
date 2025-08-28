@@ -21,7 +21,7 @@ class JobTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private Job job;
+    private Job dormantBatchJob;
 
 
     @Test
@@ -39,7 +39,7 @@ class JobTest {
         saveCustomer(364);
 
         // when
-        JobExecution result = job.execute();
+        JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -69,7 +69,7 @@ class JobTest {
         saveCustomer(400);
 
         // when
-        JobExecution result = job.execute();
+        final JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -87,7 +87,7 @@ class JobTest {
         // given
 
         // when
-        JobExecution result = job.execute();
+        final JobExecution result = dormantBatchJob.execute();
 
         // then
         final long dormantCount = customerRepository.findAll()
@@ -103,21 +103,30 @@ class JobTest {
     @DisplayName("배치가 실패하면 BatchStatus FAILED 반환 함")
     void test4() {
         // given
-        final Job batchJob = new Job(null, new JobExecutionListener() {
-            @Override
-            public void beforeJob(JobExecution jobExecution) {
-            }
-
-            @Override
-            public void afterJob(JobExecution jobExecution) {
-            }
-        });
+        final Job batchJob = new TaskletJob(null);
 
         // when
         final JobExecution result = batchJob.execute();
     
         // then
         assertThat(result.getStatus()).isEqualTo(BatchStatus.FAILED);
+    }
+
+    @Test
+    @DisplayName("358일전에 로그인한 고객에게 휴면계정 예정자라고 메일을 발송해야한다.")
+    void test5() {
+
+        // given
+        saveCustomer(358);
+        saveCustomer(358);
+        saveCustomer(358);
+        saveCustomer(35);
+        saveCustomer(35);
+
+        // when
+        // then
+        dormantBatchJob.execute();
+
     }
 
     private void saveCustomer(long loginMinusDays) {
